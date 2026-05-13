@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Home Library Management System{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="min-h-screen bg-emerald-50 text-slate-900">
+    <div class="bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-900 text-emerald-50 shadow-lg">
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.36em] text-emerald-200">Ewidencja biblioteczna</p>
+                <h1 class="text-2xl font-semibold tracking-tight">Home Library</h1>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <a href="/" class="rounded-lg border border-emerald-700 bg-emerald-700 px-4 py-2 text-sm font-semibold text-emerald-50 transition hover:bg-emerald-600">Strona główna</a>
+                <a href="#" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-amber-400">Zaloguj się</a>
+                <a href="#" class="rounded-lg border border-emerald-700 bg-emerald-800 px-4 py-2 text-sm font-semibold text-emerald-50 transition hover:bg-emerald-700">Rejestracja</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="border-t border-emerald-200 bg-emerald-50 py-5 text-center text-sm text-emerald-700">
+        Home Library Management System — zarządzanie osobistą biblioteką książek.
+    </footer>
+</body>
+</html>

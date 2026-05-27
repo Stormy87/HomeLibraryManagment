@@ -1,14 +1,82 @@
 {% extends 'base.html.jinja' %}
 
-{% block title %}Wydawca{% endblock %}
+{% block title %}{{ publisher.name }}{% endblock %}
 
 {% block header %}Szczegóły wydawcy{% endblock %}
 
 {% block content %}
 <div class="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
-    <h2 class="text-2xl font-semibold text-slate-900">Wydawca</h2>
-    <p class="mt-4 text-slate-700">Wybrany wydawca: <strong>{{ publisher_id }}</strong></p>
-    <p class="mt-2 text-slate-600">Tutaj pojawią się informacje o wydawnictwie oraz wydanych książkach.</p>
+    <h2 class="text-2xl font-semibold text-slate-900">{{ publisher.name }}</h2>
+    
+    <div class="mt-6 grid grid-cols-2 gap-6">
+        <div>
+            <p class="text-sm text-slate-600">Kraj</p>
+            <p class="text-lg font-semibold text-slate-900">{{ publisher.get_country_display }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-slate-600">Rok założenia</p>
+            <p class="text-lg font-semibold text-slate-900">{{ publisher.founded_year }}</p>
+        </div>
+        {% if publisher.website %}
+        <div>
+            <p class="text-sm text-slate-600">Strona internetowa</p>
+            <p class="text-lg"><a href="{{ publisher.website }}" target="_blank" class="text-emerald-600 hover:text-emerald-800">{{ publisher.website }}</a></p>
+        </div>
+        {% endif %}
+        {% if publisher.email %}
+        <div>
+            <p class="text-sm text-slate-600">Email</p>
+            <p class="text-lg"><a href="mailto:{{ publisher.email }}" class="text-emerald-600 hover:text-emerald-800">{{ publisher.email }}</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-8 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+    <h3 class="text-xl font-semibold text-slate-900">Publikacje wydawcy</h3>
+    {% if books %}
+    <div class="mt-6 overflow-hidden rounded-3xl border border-emerald-100 bg-emerald-50">
+        <table class="min-w-full divide-y divide-emerald-100 text-left text-sm">
+            <thead class="bg-emerald-100 text-emerald-900">
+                <tr>
+                    <th class="px-6 py-4 font-medium">Tytuł</th>
+                    <th class="px-6 py-4 font-medium">Autor</th>
+                    <th class="px-6 py-4 font-medium">Rok</th>
+                    <th class="px-6 py-4 font-medium">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white text-slate-600">
+                {% for book in books %}
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-5"><a href="{% url 'book' book.id %}" class="text-emerald-600 hover:text-emerald-800 font-medium">{{ book.title }}</a></td>
+                    <td class="px-6 py-5">
+                        {% if book.authors.all %}
+                            {% for author in book.authors.all %}
+                            <a href="{% url 'author' author.id %}" class="text-emerald-600 hover:text-emerald-800">{{ author.first_name }} {{ author.last_name }}</a>{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-5">{{ book.publication_date.year }}</td>
+                    <td class="px-6 py-5">
+                        {% if book.is_favorite and book.is_read %}
+                            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">⭐ Przeczytana</span>
+                        {% elif book.is_favorite %}
+                            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">⭐ Ulubiona</span>
+                        {% elif book.is_read %}
+                            <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">✓ Przeczytana</span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">— Nie przeczytana</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="mt-6 text-slate-600">To wydawnictwo nie ma książek w bibliotece.</p>
+    {% endif %}
 </div>
 {% endblock %}
- 

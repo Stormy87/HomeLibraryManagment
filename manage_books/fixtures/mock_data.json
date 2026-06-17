@@ -1,4 +1,8 @@
 [
+    {"model": "manage_books.category", "pk": 1, "fields": {"name": "Literatura piękna"}},
+    {"model": "manage_books.category", "pk": 2, "fields": {"name": "Literatura faktu"}},
+    {"model": "manage_books.category", "pk": 3, "fields": {"name": "Nauki ścisłe"}},
+
     {"model": "manage_books.genre", "pk": 1, "fields": {"name": "Fiction"}},
     {"model": "manage_books.genre", "pk": 2, "fields": {"name": "Non-Fiction"}},
     {"model": "manage_books.genre", "pk": 3, "fields": {"name": "Science Fiction"}},

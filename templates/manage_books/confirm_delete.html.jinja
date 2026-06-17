@@ -1,0 +1,21 @@
+{% extends 'base.html.jinja' %}
+
+{% block title %}Potwierdź usunięcie{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-lg rounded-[2rem] border border-red-200 bg-white p-8 shadow-sm">
+    <h2 class="text-2xl font-semibold text-slate-900">Potwierdź usunięcie</h2>
+    <p class="mt-4 text-slate-700">Czy na pewno chcesz usunąć {{ object_name }} <strong>{{ object }}</strong>?</p>
+    <p class="mt-2 text-sm text-red-600">Tej operacji nie można cofnąć.</p>
+
+    <form method="post" class="mt-6 flex gap-3">
+        {% csrf_token %}
+        <button type="submit" class="rounded-lg bg-red-600 px-6 py-2 font-semibold text-white hover:bg-red-700">Usuń</button>
+        {% if cancel_id %}
+        <a href="{% url cancel_url cancel_id %}" class="rounded-lg border border-slate-300 px-6 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Anuluj</a>
+        {% elif dict_type %}
+        <a href="{% url cancel_url dict_type %}" class="rounded-lg border border-slate-300 px-6 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Anuluj</a>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

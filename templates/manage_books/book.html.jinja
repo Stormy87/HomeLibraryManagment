@@ -2,113 +2,145 @@
 
 {% block title %}{{ book.title }}{% endblock %}
 
-{% block header %}Szczegóły książki{% endblock %}
-
 {% block content %}
 <div class="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
-    <div class="flex flex-col gap-8 lg:flex-row">
-        <div class="flex-1">
-            <h2 class="text-3xl font-semibold text-slate-900">{{ book.title }}</h2>
-            
-            <div class="mt-8 space-y-6">
-                {% if book.authors.all %}
-                <div>
-                    <p class="text-sm font-semibold text-slate-600 uppercase">Autor{{ book.authors.count|pluralize }}</p>
-                    <div class="mt-2 space-y-2">
-                        {% for author in book.authors.all %}
-                        <a href="{% url 'author' author.id %}" class="block text-lg text-emerald-600 hover:text-emerald-800">{{ author.first_name }} {{ author.last_name }}</a>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if book.publisher %}
-                <div>
-                    <p class="text-sm font-semibold text-slate-600 uppercase">Wydawca</p>
-                    <a href="{% url 'publisher' book.publisher.id %}" class="mt-2 block text-lg text-emerald-600 hover:text-emerald-800">{{ book.publisher.name }}</a>
-                </div>
-                {% endif %}
-                
-                {% if book.series %}
-                <div>
-                    <p class="text-sm font-semibold text-slate-600 uppercase">Seria</p>
-                    <a href="{% url 'series' book.series.id %}" class="mt-2 block text-lg text-emerald-600 hover:text-emerald-800">{{ book.series.name }}</a>
-                </div>
-                {% endif %}
-                
-                <div class="grid grid-cols-2 gap-4 pt-4">
-                    <div>
-                        <p class="text-sm font-semibold text-slate-600 uppercase">ISBN</p>
-                        <p class="mt-2 font-mono text-slate-900">{{ book.isbn }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-600 uppercase">Strony</p>
-                        <p class="mt-2 text-lg text-slate-900">{{ book.pages }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-600 uppercase">Rok wydania</p>
-                        <p class="mt-2 text-lg text-slate-900">{{ book.publication_date.year }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-600 uppercase">Format</p>
-                        <p class="mt-2 text-lg text-slate-900">{{ book.get_cover_display }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-600 uppercase">Język</p>
-                        <p class="mt-2 text-lg text-slate-900">{{ book.get_language_display }}</p>
-                    </div>
-                </div>
-                
-                {% if book.genres.all or book.topics.all %}
-                <div class="pt-4">
-                    {% if book.genres.all %}
-                    <p class="text-sm font-semibold text-slate-600 uppercase">Gatunki</p>
-                    <div class="mt-2 flex flex-wrap gap-2">
-                        {% for genre in book.genres.all %}
-                        <span class="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-800">{{ genre.name }}</span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    
-                    {% if book.topics.all %}
-                    <p class="mt-4 text-sm font-semibold text-slate-600 uppercase">Tematy</p>
-                    <div class="mt-2 flex flex-wrap gap-2">
-                        {% for topic in book.topics.all %}
-                        <span class="inline-block rounded-full bg-purple-100 px-3 py-1 text-sm font-semibold text-purple-800">{{ topic.name }}</span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-                
-                <div class="flex gap-3 pt-6">
-                    {% if book.is_read %}
-                    <span class="inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 font-semibold text-green-800">✓ Przeczytana</span>
-                    {% endif %}
-                    {% if book.is_favorite %}
-                    <span class="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 font-semibold text-amber-800">⭐ Ulubiona</span>
-                    {% endif %}
-                </div>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <h2 class="text-3xl font-semibold text-slate-900">{{ book.title }}</h2>
+        {% if user.is_authenticated and book.owner == user or user.is_authenticated and not book.owner %}
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'book_edit' book.id %}" class="rounded-lg border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50">Edytuj</a>
+            <a href="{% url 'book_delete' book.id %}" class="rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">Usuń</a>
+        </div>
+        {% elif not user.is_authenticated %}
+        <a href="{% url 'login' %}" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-amber-400">Zaloguj się</a>
+        {% endif %}
+    </div>
+
+    <div class="mt-8 space-y-6">
+        {% if book.authors.all %}
+        <div>
+            <p class="text-sm font-semibold uppercase text-slate-600">Autor{{ book.authors.count|pluralize:"zy" }}</p>
+            <div class="mt-2 space-y-2">
+                {% for author in book.authors.all %}
+                <a href="{% url 'author' author.id %}" class="block text-lg text-emerald-600 hover:text-emerald-800">{{ author.first_name }} {{ author.last_name }}{% if author.alias %} ({{ author.alias }}){% endif %}</a>
+                {% endfor %}
             </div>
+        </div>
+        {% endif %}
+
+        {% if book.publisher %}
+        <div>
+            <p class="text-sm font-semibold uppercase text-slate-600">Wydawca</p>
+            <a href="{% url 'publisher' book.publisher.id %}" class="mt-2 block text-lg text-emerald-600 hover:text-emerald-800">{{ book.publisher.name }}</a>
+        </div>
+        {% endif %}
+
+        {% if book.series %}
+        <div>
+            <p class="text-sm font-semibold uppercase text-slate-600">Seria</p>
+            <a href="{% url 'series' book.series.id %}" class="mt-2 block text-lg text-emerald-600 hover:text-emerald-800">{{ book.series.name }}</a>
+        </div>
+        {% endif %}
+
+        {% if book.category %}
+        <div>
+            <p class="text-sm font-semibold uppercase text-slate-600">Dział</p>
+            <p class="mt-2 text-lg text-slate-900">{{ book.category.name }}</p>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-2 gap-4 pt-4">
+            <div>
+                <p class="text-sm font-semibold uppercase text-slate-600">ISBN</p>
+                <p class="mt-2 font-mono text-slate-900">{{ book.isbn }}</p>
+            </div>
+            <div>
+                <p class="text-sm font-semibold uppercase text-slate-600">Strony</p>
+                <p class="mt-2 text-lg text-slate-900">{{ book.pages }}</p>
+            </div>
+            <div>
+                <p class="text-sm font-semibold uppercase text-slate-600">Data publikacji</p>
+                <p class="mt-2 text-lg text-slate-900">{{ book.publication_date }}</p>
+            </div>
+            <div>
+                <p class="text-sm font-semibold uppercase text-slate-600">Format</p>
+                <p class="mt-2 text-lg text-slate-900">{{ book.get_cover_display }}</p>
+            </div>
+            <div>
+                <p class="text-sm font-semibold uppercase text-slate-600">Język</p>
+                <p class="mt-2 text-lg text-slate-900">{{ book.get_language_display }}</p>
+            </div>
+        </div>
+
+        {% if book.genres.all or book.topics.all %}
+        <div class="pt-4">
+            {% if book.genres.all %}
+            <p class="text-sm font-semibold uppercase text-slate-600">Gatunki</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+                {% for genre in book.genres.all %}
+                <span class="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-800">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if book.topics.all %}
+            <p class="mt-4 text-sm font-semibold uppercase text-slate-600">Tematy</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+                {% for topic in book.topics.all %}
+                <span class="inline-block rounded-full bg-purple-100 px-3 py-1 text-sm font-semibold text-purple-800">{{ topic.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="flex flex-wrap items-center gap-3 pt-6">
+            {% if book.is_read %}
+            <span class="inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 font-semibold text-green-800">✓ Przeczytana</span>
+            {% else %}
+            <span class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-600">Nieprzeczytana</span>
+            {% endif %}
+            {% if book.is_favorite %}
+            <span class="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 font-semibold text-amber-800">⭐ Ulubiona</span>
+            {% endif %}
+
+            {% if user.is_authenticated and book.owner == user or user.is_authenticated and not book.owner %}
+            <form method="post" action="{% url 'book_toggle_read' book.id %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="rounded-lg border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
+                    {% if book.is_read %}Oznacz jako nieprzeczytaną{% else %}Oznacz jako przeczytaną{% endif %}
+                </button>
+            </form>
+            <form method="post" action="{% url 'book_toggle_favorite' book.id %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">
+                    {% if book.is_favorite %}Usuń z ulubionych{% else %}Dodaj do ulubionych{% endif %}
+                </button>
+            </form>
+            {% endif %}
         </div>
     </div>
 </div>
 
-{% if notes %}
 <div class="mt-8 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
-    <h3 class="text-2xl font-semibold text-slate-900">Notatki ({{ notes|length }})</h3>
-    
+    <div class="flex items-center justify-between">
+        <h3 class="text-2xl font-semibold text-slate-900">Notatki{% if notes %} ({{ notes|length }}){% endif %}</h3>
+        {% if user.is_authenticated and book.owner == user or user.is_authenticated and not book.owner %}
+        <a href="{% url 'note_add' book.id %}" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-amber-400">Dodaj notatkę</a>
+        {% endif %}
+    </div>
+
+    {% if notes %}
     <div class="mt-6 space-y-4">
         {% for note in notes %}
         <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 hover:bg-slate-100">
-            <div class="mb-3 flex items-start justify-between">
-                <p class="text-sm text-slate-600">{{ note.created_at|date:"d M Y, H:i" }}</p>
-                <a href="{% url 'note' note.id %}" class="text-emerald-600 hover:text-emerald-800 text-sm font-semibold">Przejdź →</a>
-            </div>
-            <p class="text-slate-700">{{ note.content|truncatewords:50 }}</p>
+            <p class="text-sm text-slate-600">{{ note.created_at|date:"d.m.Y, H:i" }}</p>
+            <p class="mt-2 text-slate-700">{{ note.content }}</p>
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <p class="mt-4 text-slate-500">Brak notatek do tej książki.</p>
+    {% endif %}
 </div>
-{% endif %}
 {% endblock %}

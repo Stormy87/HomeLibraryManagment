@@ -1,0 +1,44 @@
+{% extends 'base.html.jinja' %}
+
+{% block title %}{{ label }}{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <a href="{% url 'dictionaries' %}" class="text-sm text-emerald-600 hover:text-emerald-800">← Słowniki</a>
+        <h2 class="mt-2 text-2xl font-semibold text-slate-900">{{ label }}</h2>
+    </div>
+    <a href="{% url 'dictionary_add' dict_type %}" class="rounded-lg bg-amber-500 px-5 py-2 text-sm font-semibold text-slate-900 hover:bg-amber-400">Dodaj</a>
+</div>
+
+<div class="overflow-hidden rounded-2xl border border-emerald-100 bg-white shadow-sm">
+    <table class="min-w-full divide-y divide-emerald-100 text-left text-sm">
+        <thead class="bg-emerald-100 text-emerald-900">
+            <tr>
+                <th class="px-6 py-4 font-medium">Nazwa</th>
+                <th class="px-6 py-4 font-medium">Akcje</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
+            {% for item in items %}
+            <tr class="hover:bg-slate-50">
+                <td class="px-6 py-4">
+                    {% if dict_type == 'authors' %}
+                    {{ item.first_name }} {{ item.last_name }}{% if item.alias %} ({{ item.alias }}){% endif %}
+                    {% else %}
+                    {{ item }}
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4">
+                    <a href="{% url 'dictionary_edit' dict_type item.id %}" class="text-emerald-600 hover:text-emerald-800">Edytuj</a>
+                    <span class="mx-2 text-slate-300">|</span>
+                    <a href="{% url 'dictionary_delete' dict_type item.id %}" class="text-red-600 hover:text-red-800">Usuń</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td class="px-6 py-8 text-slate-500" colspan="2">Brak pozycji.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
